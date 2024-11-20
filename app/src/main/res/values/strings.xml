@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MIPT_5_praktinis</string>
+    <string name="app_title">Foreign Exchange Rates for Euro</string>
+    <string name="search_hint">Enter currency code</string>'
+    <string name="load_data_button">Load Data</string>
+    <string name="search_button">Search</string>
 </resources>
