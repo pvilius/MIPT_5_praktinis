@@ -1,6 +1,7 @@
 package com.example.mipt_5_praktinis;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -12,50 +13,66 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private ListView listView;
-    private EditText filterEditText;
+    private static final String TAG = "MainActivity";
+
+    private ListView currencyListView;
+    private EditText filterCurrencyEditText;
     private ArrayList<String> currencyList;
-    private ArrayAdapter<String> adapter;
+    private ArrayAdapter<String> currencyAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        listView = findViewById(R.id.listView);
-        filterEditText = findViewById(R.id.filterEditText);
+        Log.d(TAG, "onCreate method called");
+
+        currencyListView = findViewById(R.id.listView);
+        filterCurrencyEditText = findViewById(R.id.filterEditText);
 
         currencyList = new ArrayList<>();
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, currencyList);
-        listView.setAdapter(adapter);
+        currencyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, currencyList);
+        currencyListView.setAdapter(currencyAdapter);
 
-        new DataLoader(currencyList, adapter).execute(Constants.FLOATRATES_API_URL);
+        new DataLoader(currencyList, currencyAdapter).execute(Constants.FLOATRATES_API_URL);
     }
 
     public void filterCurrencies(View view) {
-        String filter = filterEditText.getText().toString().toUpperCase();
+        Log.d(TAG, "filterCurrencies method called");
 
-        if (filter.isEmpty()) {
+        String filterText = filterCurrencyEditText.getText().toString().toUpperCase();
+
+        if (filterText.isEmpty()) {
             loadData(view);
         } else {
             ArrayList<String> filteredList = new ArrayList<>();
             for (String currency : currencyList) {
-                String targetCurrency = currency.split(" – ")[0];
-                if (targetCurrency.contains(filter)) {
-                    filteredList.add(currency);
+                try {
+                    String targetCurrency = currency.split(" – ")[0];
+                    if (targetCurrency.contains(filterText)) {
+                        filteredList.add(currency);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Error in filtering: " + e.getMessage(), e);
                 }
             }
-            adapter.clear();
-            adapter.addAll(filteredList);
-            adapter.notifyDataSetChanged();
+            currencyAdapter.clear();
+            currencyAdapter.addAll(filteredList);
+            currencyAdapter.notifyDataSetChanged();
         }
     }
 
     public void loadData(View view) {
-        filterEditText.setText("");
+        Log.d(TAG, "loadData method called");
+
+        filterCurrencyEditText.setText("");
 
         Toast.makeText(this, "Loading Data...", Toast.LENGTH_SHORT).show();
 
-        new DataLoader(currencyList, adapter).execute(Constants.FLOATRATES_API_URL);
+        try {
+            new DataLoader(currencyList, currencyAdapter).execute(Constants.FLOATRATES_API_URL);
+        } catch (Exception e) {
+            Log.e(TAG, "Error in loadData: " + e.getMessage(), e);
+        }
     }
 }

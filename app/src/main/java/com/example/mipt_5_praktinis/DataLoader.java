@@ -12,6 +12,7 @@ import java.net.URL;
 import java.util.ArrayList;
 
 public class DataLoader extends AsyncTask<String, Void, ArrayList<String>> {
+    private static final String TAG = "DataLoader";
     private ArrayList<String> currencyList;
     private ArrayAdapter<String> adapter;
 
@@ -22,6 +23,7 @@ public class DataLoader extends AsyncTask<String, Void, ArrayList<String>> {
 
     @Override
     protected ArrayList<String> doInBackground(String... urls) {
+        Log.d(TAG, "doInBackground method called");
         ArrayList<String> currencies = new ArrayList<>();
         try {
             URL url = new URL(urls[0]);
@@ -32,17 +34,20 @@ public class DataLoader extends AsyncTask<String, Void, ArrayList<String>> {
             Document document = Parser.parseXML(inputStream);
             currencies = Parser.extractCurrencyRates(document);
         } catch (Exception e) {
-            Log.e("DataLoader", "Error loading data", e);
+            Log.e(TAG, "Error loading data", e);
         }
         return currencies;
     }
 
     @Override
     protected void onPostExecute(ArrayList<String> result) {
+        Log.d(TAG, "onPostExecute method called");
         if (result != null) {
             currencyList.clear();
             currencyList.addAll(result);
             adapter.notifyDataSetChanged();
+        } else {
+            Log.e(TAG, "Result is null in onPostExecute");
         }
     }
 }
