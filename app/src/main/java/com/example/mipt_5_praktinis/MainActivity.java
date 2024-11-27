@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText filterCurrencyEditText;
     private ArrayList<String> currencyList;
     private ArrayAdapter<String> currencyAdapter;
+    private TextView errorTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,12 +31,13 @@ public class MainActivity extends AppCompatActivity {
 
         currencyListView = findViewById(R.id.listView);
         filterCurrencyEditText = findViewById(R.id.filterEditText);
+        errorTextView = findViewById(R.id.errorTextView);
 
         currencyList = new ArrayList<>();
         currencyAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, currencyList);
         currencyListView.setAdapter(currencyAdapter);
 
-        new DataLoader(currencyList, currencyAdapter).execute(Constants.FLOATRATES_API_URL);
+        new DataLoader(currencyList, currencyAdapter, errorTextView).execute(Constants.FLOATRATES_API_URL);
     }
 
     public void filterCurrencies(View view) {
@@ -66,11 +69,13 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "loadData method called");
 
         filterCurrencyEditText.setText("");
+        errorTextView.setVisibility(View.GONE);
 
         Toast.makeText(this, "Loading Data...", Toast.LENGTH_SHORT).show();
 
         try {
-            new DataLoader(currencyList, currencyAdapter).execute(Constants.FLOATRATES_API_URL);
+            // Pass the error TextView along with the data
+            new DataLoader(currencyList, currencyAdapter, errorTextView).execute(Constants.FLOATRATES_API_URL);
         } catch (Exception e) {
             Log.e(TAG, "Error in loadData: " + e.getMessage(), e);
         }

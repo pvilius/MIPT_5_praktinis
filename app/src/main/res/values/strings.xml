@@ -4,4 +4,5 @@
     <string name="search_hint">Enter currency code</string>'
     <string name="load_data_button">Load Data</string>
     <string name="search_button">Search</string>
+    <string name="error_data_loading_message">Error loading data. ABORT!!!</string>
 </resources>

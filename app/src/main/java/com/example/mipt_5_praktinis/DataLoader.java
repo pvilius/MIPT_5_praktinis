@@ -3,6 +3,7 @@ package com.example.mipt_5_praktinis;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import org.w3c.dom.Document;
 
@@ -15,10 +16,12 @@ public class DataLoader extends AsyncTask<String, Void, ArrayList<String>> {
     private static final String TAG = "DataLoader";
     private ArrayList<String> currencyList;
     private ArrayAdapter<String> adapter;
+    private TextView errorTextView;
 
-    public DataLoader(ArrayList<String> currencyList, ArrayAdapter<String> adapter) {
+    public DataLoader(ArrayList<String> currencyList, ArrayAdapter<String> adapter, TextView errorTextView) {
         this.currencyList = currencyList;
         this.adapter = adapter;
+        this.errorTextView = errorTextView;
     }
 
     @Override
@@ -42,12 +45,15 @@ public class DataLoader extends AsyncTask<String, Void, ArrayList<String>> {
     @Override
     protected void onPostExecute(ArrayList<String> result) {
         Log.d(TAG, "onPostExecute method called");
-        if (result != null) {
+        if (result != null && !result.isEmpty()) {
             currencyList.clear();
             currencyList.addAll(result);
             adapter.notifyDataSetChanged();
+            errorTextView.setVisibility(TextView.GONE);
         } else {
-            Log.e(TAG, "Result is null in onPostExecute");
+            Log.e(TAG, "Result is null or empty in onPostExecute");
+            errorTextView.setVisibility(TextView.VISIBLE);
+
         }
     }
 }
